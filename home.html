@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Forensic System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image:url('https://forensicsresources.org/wp-content/uploads/2019/04/DNA-background.jpg') ;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: rgb(207, 152, 249);
+      padding: 30px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      width: 400px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .hidden {
+      display: none;
+    }
+    input[type="text"], textarea, select, input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .case-list {
+      margin-top: 20px;
+    }
+    .search-sort-container {
+      margin-bottom: 20px;
+    }
+    .search-sort-container input,
+    .search-sort-container select {
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Forensic System</h2>
+
+    <!-- Options to Submit New Case or View Cases -->
+    <button id="newCaseBtn">Submit New Case</button>
+    <button id="viewCasesBtn">View Existing Cases</button>
+
+    <!-- Case submission form (Initially hidden) -->
+    <div id="caseFormContainer" class="hidden">
+      <form id="caseForm">
+        <input type="text" id="caseNumber" placeholder="Case Number" required>
+        <textarea id="caseDescription" placeholder="Case Description" rows="3" required></textarea>
+
+        <!-- Dropdown for case category -->
+        <label for="caseCategory">Select Category:</label>
+        <select id="caseCategory" required>
+          <option value="">Select Category</option>
+          <option value="Burglary">Burglary</option>
+          <option value="Homicide">Homicide</option>
+          <option value="Suicide">Suicide</option>
+          <option value="Forgery">Forgery</option>
+        </select>
+        
+        <!-- Field for uploading evidence picture -->
+        <label for="evidencePicture">Upload Evidence Picture:</label>
+        <input type="file" id="evidencePicture" accept="image/*" required>
+
+        <!-- Additional description for evidence -->
+        <textarea id="evidenceDetails" placeholder="Additional Evidence Description" rows="4" required></textarea>
+
+        <button type="submit">Submit Case</button>
+      </form>
+    </div>
+
+    <!-- Existing cases list (Initially hidden) -->
+    <div id="casesContainer" class="hidden case-list">
+      <h3>Existing Cases:</h3>
+      
+      <!-- Search and Sort functionality -->
+      <div class="search-sort-container">
+        <input type="text" id="searchInput" placeholder="Search by case number or description">
+        <select id="filterCategorySelect">
+          <option value="">Filter by Category</option>
+          <option value="Burglary">Burglary</option>
+          <option value="Homicide">Homicide</option>
+          <option value="Suicide">Suicide</option>
+          <option value="Forgery">Forgery</option>
+        </select>
+      </div>
+
+      <ul id="casesList">
+        <!-- Default cases displayed here -->
+        <li class="case-item" data-category="Burglary">Case #001: Theft Investigation - Open (Category: Burglary)</li>
+        <li class="case-item" data-category="Homicide">Case #002: Murder Investigation - Open (Category: Homicide)</li>
+        <li class="case-item" data-category="Suicide">Case #003: Suicide Investigation - Open (Category: Suicide)</li>
+        <li class="case-item" data-category="Forgery">Case #004: Forgery Investigation - Open (Category: Forgery)</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Get references to buttons and containers
+    const newCaseBtn = document.getElementById("newCaseBtn");
+    const viewCasesBtn = document.getElementById("viewCasesBtn");
+    const caseFormContainer = document.getElementById("caseFormContainer");
+    const casesContainer = document.getElementById("casesContainer");
+    const searchInput = document.getElementById("searchInput");
+    const filterCategorySelect = document.getElementById("filterCategorySelect");
+    const casesList = document.getElementById("casesList");
+
+    // Show the case submission form and hide the cases list
+    newCaseBtn.addEventListener("click", function() {
+      caseFormContainer.classList.remove("hidden");
+      casesContainer.classList.add("hidden");
+    });
+
+    // Show the list of existing cases and hide the case submission form
+    viewCasesBtn.addEventListener("click", function() {
+      casesContainer.classList.remove("hidden");
+      caseFormContainer.classList.add("hidden");
+    });
+
+    // Handle form submission
+    document.getElementById("caseForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const caseNumber = document.getElementById("caseNumber").value;
+      const caseDescription = document.getElementById("caseDescription").value;
+      const caseCategory = document.getElementById("caseCategory").value;
+      const evidencePicture = document.getElementById("evidencePicture").files[0];
+      const evidenceDetails = document.getElementById("evidenceDetails").value;
+
+      if (caseNumber && caseDescription && caseCategory && evidencePicture && evidenceDetails) {
+        // Display entered details in an alert (for demo)
+        alert(`Case Submitted!\n\nCase Number: ${caseNumber}\nDescription: ${caseDescription}\nCategory: ${caseCategory}\nEvidence Details: ${evidenceDetails}\nPicture: ${evidencePicture.name}`);
+
+        // Add the new case to the list of cases
+        const newCaseItem = document.createElement("li");
+        newCaseItem.classList.add("case-item");
+        newCaseItem.textContent = `Case #${caseNumber}: ${caseDescription} - Open (Category: ${caseCategory})`;
+        newCaseItem.setAttribute("data-category", caseCategory);
+        casesList.appendChild(newCaseItem);
+      } else {
+        alert("Please fill out all fields and upload an image.");
+      }
+    });
+
+    // Search functionality
+    searchInput.addEventListener("input", function() {
+      const filter = searchInput.value.toLowerCase();
+      const caseItems = casesList.getElementsByClassName("case-item");
+      Array.from(caseItems).forEach(function(caseItem) {
+        const text = caseItem.textContent || caseItem.innerText;
+        caseItem.style.display = text.toLowerCase().includes(filter) ? "" : "none";
+      });
+    });
+
+    // Filter by category functionality
+    filterCategorySelect.addEventListener("change", function() {
+      const selectedCategory = filterCategorySelect.value;
+      const caseItems = casesList.getElementsByClassName("case-item");
+      Array.from(caseItems).forEach(function(caseItem) {
+        if (selectedCategory === "" || caseItem.getAttribute("data-category") === selectedCategory) {
+          caseItem.style.display = "";
+        } else {
+          caseItem.style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
